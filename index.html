@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photography Survey — Tromsø</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #1a56a0;
+    --blue-light: #e8f1fb;
+    --blue-mid: #2e7dd1;
+    --text: #1a1a1a;
+    --text-muted: #555;
+    --bg: #f7f8fa;
+    --card: #ffffff;
+    --border: #e0e4ea;
+    --radius: 12px;
+    --aurora: linear-gradient(135deg, #0d1b3e 0%, #1a3a6e 40%, #0e4d3a 70%, #1a1a2e 100%);
+    --gold: #f0a500;
+    --gold-light: #fff8e6;
+  }
+
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── LANGUAGE SELECTOR ── */
+  #lang-page { min-height: 100vh; background: var(--aurora); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; text-align: center; }
+
+  .hero-icon { font-size: 3.5rem; margin-bottom: 1.2rem; }
+
+  #lang-page h1 { color: #fff; font-size: clamp(1.4rem, 4vw, 2.2rem); font-weight: 600; margin-bottom: 0.4rem; letter-spacing: -0.02em; }
+  #lang-page .subtitle { color: rgba(255,255,255,0.65); font-size: 0.92rem; margin-bottom: 1.6rem; }
+
+  /* Gift banner on language page */
+  .gift-banner-lang {
+    background: rgba(240,165,0,0.15);
+    border: 1px solid rgba(240,165,0,0.4);
+    border-radius: var(--radius);
+    padding: 0.9rem 1.4rem;
+    margin-bottom: 2rem;
+    max-width: 500px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+  }
+  .gift-banner-lang .gift-icon { font-size: 1.8rem; flex-shrink: 0; }
+  .gift-banner-lang .gift-text { color: rgba(255,255,255,0.9); font-size: 0.88rem; line-height: 1.5; }
+  .gift-banner-lang .gift-text strong { color: #ffd166; font-weight: 600; }
+
+  .lang-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; max-width: 680px; width: 100%; }
+
+  .lang-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: var(--radius); color: #fff; padding: 1.1rem 1rem; cursor: pointer; font-size: 1rem; font-weight: 500; transition: background 0.2s, transform 0.15s; display: flex; flex-direction: column; align-items: center; gap: 6px; backdrop-filter: blur(8px); }
+  .lang-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+  .lang-btn .flag { font-size: 2rem; }
+
+  /* ── SURVEY PAGE ── */
+  #survey-page { display: none; min-height: 100vh; }
+
+  .survey-header { background: var(--aurora); padding: 2.5rem 1rem 2.5rem; text-align: center; position: relative; }
+
+  .back-btn { position: absolute; top: 1.2rem; left: 1.2rem; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 8px; padding: 0.4rem 0.8rem; cursor: pointer; font-size: 0.85rem; }
+  .back-btn:hover { background: rgba(255,255,255,0.25); }
+
+  .survey-header h1 { color: #fff; font-size: clamp(1.2rem, 3.5vw, 1.8rem); font-weight: 600; margin-bottom: 0.5rem; max-width: 560px; margin-left: auto; margin-right: auto; }
+  .survey-header .survey-desc { color: rgba(255,255,255,0.7); font-size: 0.88rem; max-width: 500px; margin: 0 auto 1.2rem; line-height: 1.6; }
+
+  /* Gift banner inside survey header */
+  .gift-banner-survey {
+    background: rgba(240,165,0,0.18);
+    border: 1px solid rgba(240,165,0,0.45);
+    border-radius: 10px;
+    padding: 0.7rem 1.2rem;
+    max-width: 500px;
+    margin: 0 auto 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.84rem;
+    color: #ffd166;
+  }
+  .gift-banner-survey span { color: rgba(255,255,255,0.85); }
+
+  .progress-bar-wrap { max-width: 500px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 99px; height: 4px; }
+  .progress-bar-fill { height: 4px; background: #7ecfff; border-radius: 99px; transition: width 0.4s ease; width: 0%; }
+
+  .survey-body { max-width: 660px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+  .section-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); background: var(--blue-light); display: inline-block; padding: 4px 10px; border-radius: 99px; margin-bottom: 1rem; margin-top: 2rem; }
+
+  .q-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+  .q-num { font-size: 0.72rem; font-weight: 600; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; }
+  .q-text { font-size: 0.97rem; font-weight: 500; color: var(--text); margin-bottom: 0.9rem; line-height: 1.5; }
+  .q-type-badge { font-size: 0.7rem; color: var(--text-muted); background: #f0f2f5; padding: 2px 8px; border-radius: 99px; display: inline-block; margin-bottom: 0.9rem; }
+
+  .options-list { display: flex; flex-direction: column; gap: 6px; }
+  .opt-label { display: flex; align-items: flex-start; gap: 10px; padding: 0.6rem 0.8rem; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.9rem; line-height: 1.4; transition: background 0.15s, border-color 0.15s; color: var(--text); }
+  .opt-label:hover { background: var(--blue-light); border-color: var(--blue-mid); }
+  .opt-label input { margin-top: 2px; accent-color: var(--blue); flex-shrink: 0; width: 16px; height: 16px; }
+
+  .scale-wrap { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .scale-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; }
+  .scale-btn { width: 44px; height: 44px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--card); font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.15s; color: var(--text); }
+  .scale-btn:hover { border-color: var(--blue-mid); background: var(--blue-light); }
+  .scale-btn.selected { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  .survey-textarea { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-size: 0.9rem; font-family: inherit; color: var(--text); resize: vertical; min-height: 90px; background: var(--card); }
+  .survey-textarea:focus { outline: none; border-color: var(--blue-mid); }
+
+  .submit-wrap { margin-top: 2.5rem; text-align: center; }
+  .submit-btn { background: var(--blue); color: #fff; border: none; border-radius: 10px; padding: 0.9rem 2.5rem; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.15s; width: 100%; max-width: 340px; }
+  .submit-btn:hover { background: #1244a0; transform: translateY(-1px); }
+  .submit-btn:disabled { background: #aaa; cursor: not-allowed; transform: none; }
+
+  .error-msg { color: #c0392b; font-size: 0.8rem; margin-top: 6px; display: none; }
+  .q-card.has-error { border-color: #e74c3c; }
+
+  /* ── THANK YOU ── */
+  #thanks-page {
+    display: none;
+    min-height: 100vh;
+    background: var(--aurora);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem 1rem;
+  }
+  #thanks-page h2 { color: #fff; font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 0.8rem; }
+  #thanks-page .thanks-sub { color: rgba(255,255,255,0.7); font-size: 0.95rem; max-width: 420px; line-height: 1.7; margin-bottom: 2rem; }
+
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--gold);
+    color: #1a1a1a;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+    margin-bottom: 1rem;
+  }
+  .download-btn:hover { background: #e09500; transform: translateY(-2px); }
+  .download-btn .dl-icon { font-size: 1.4rem; }
+
+  .download-note { color: rgba(255,255,255,0.5); font-size: 0.78rem; margin-bottom: 2rem; }
+
+  .another-btn { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.8); border-radius: 10px; padding: 0.7rem 1.8rem; cursor: pointer; font-size: 0.88rem; }
+  .another-btn:hover { background: rgba(255,255,255,0.2); }
+
+  @media (max-width: 480px) {
+    .lang-grid { grid-template-columns: 1fr 1fr; }
+    .q-card { padding: 1rem; }
+    .gift-banner-lang { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     LANGUAGE SELECTOR
+══════════════════════════════════════════ -->
+<div id="lang-page">
+  <div class="hero-icon">📷</div>
+  <h1>Photography &amp; your trip to Tromsø</h1>
+  <p class="subtitle">Choose your language · Elige tu idioma · Wähle deine Sprache · Choisissez · 选择语言</p>
+
+  <div class="gift-banner-lang">
+    <span class="gift-icon">🎁</span>
+    <div class="gift-text" id="gift-text-lang">
+      <strong>Free gift!</strong> Answer the survey and receive a selection of <strong>free Tromsø photos</strong> to keep — Northern Lights, wildlife, landscapes.
+    </div>
+  </div>
+
+  <div class="lang-grid">
+    <button class="lang-btn" onclick="startSurvey('en')"><span class="flag">🇬🇧</span><span>English</span></button>
+    <button class="lang-btn" onclick="startSurvey('es')"><span class="flag">🇪🇸</span><span>Español</span></button>
+    <button class="lang-btn" onclick="startSurvey('de')"><span class="flag">🇩🇪</span><span>Deutsch</span></button>
+    <button class="lang-btn" onclick="startSurvey('fr')"><span class="flag">🇫🇷</span><span>Français</span></button>
+    <button class="lang-btn" onclick="startSurvey('zh')"><span class="flag">🇨🇳</span><span>中文</span></button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SURVEY PAGE
+══════════════════════════════════════════ -->
+<div id="survey-page">
+  <div class="survey-header">
+    <button class="back-btn" id="back-btn" onclick="goBack()">← Back</button>
+    <h1 id="survey-title"></h1>
+    <p class="survey-desc" id="survey-desc"></p>
+    <div class="gift-banner-survey">
+      <span>🎁</span>
+      <span id="gift-survey-text">Complete the survey and receive free Tromsø photos as a gift!</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-bar"></div>
+    </div>
+  </div>
+  <div class="survey-body" id="survey-body"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     THANK YOU + DOWNLOAD
+══════════════════════════════════════════ -->
+<div id="thanks-page">
+  <div style="font-size:3.5rem; margin-bottom:1.2rem;">🌌</div>
+  <h2 id="thanks-title"></h2>
+  <p class="thanks-sub" id="thanks-msg"></p>
+
+  <a id="download-btn" class="download-btn"
+     href="https://drive.google.com/drive/folders/1ALrEXp2HQVPMUnIZVYLRsF1Y-tBaJ-G8?usp=drive_link"
+     target="_blank" rel="noopener">
+    <span class="dl-icon">🖼️</span>
+    <span id="download-label">Download your free Tromsø photos</span>
+  </a>
+  <p class="download-note" id="download-note">Opens in Google Drive · No account required to view</p>
+
+  <button class="another-btn" onclick="resetSurvey()" id="thanks-again"></button>
+</div>
+
+<script>
+// ── CONFIGURATION ──────────────────────────────────────────
+// Replace this URL with your published Google Apps Script Web App URL
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgamDOQR5fKbg6sxToBAainXoEiQd6NnJBo_ZnegKUKneWbc6B4qB23o6_fyesgdBiQQ/exec";
+
+const DRIVE_LINK = "https://drive.google.com/drive/folders/1ALrEXp2HQVPMUnIZVYLRsF1Y-tBaJ-G8?usp=drive_link";
+
+// ── TRANSLATIONS ───────────────────────────────────────────
+const T = {
+  en: {
+    title: "Photography & your trip to Tromsø",
+    desc: "This short survey (5 min) helps us understand how travelers experience photography in Tromsø. Your answers are anonymous.",
+    back: "← Back",
+    single: "Single choice", multiple: "Multiple choice", scale: "Scale 1–5", open: "Open answer",
+    submit: "Submit survey", submitting: "Sending…", error_required: "Please answer this question",
+    gift_survey: "Complete the survey and receive free Tromsø photos as a gift! 🎁",
+    thanks_title: "Thank you! 🙏",
+    thanks_msg: "Your answers will help improve photography services for visitors to Tromsø. Here is your gift — a selection of Tromsø photos, free to use and keep.",
+    download_label: "Download your free Tromsø photos",
+    download_note: "Opens in Google Drive · No account required to view",
+    thanks_again: "Take the survey again",
+    sections: ["About your trip", "Photography experience", "Camera rental interest", "Discovery & context"],
+    questions: [
+      { n:"Q1", text:"What was the main reason for your trip to Tromsø?", type:"radio", req:true, opts:["See the Northern Lights","Midnight sun / summer nature","Winter activities (skiing, dog sledding, whale watching…)","City break / culture","Work or conference","Other"] },
+      { n:"Q2", text:"How many nights did you (or will you) spend in Tromsø?", type:"radio", req:true, opts:["1 night","2–3 nights","4–6 nights","1 week or more"] },
+      { n:"Q3", text:"Who did you travel with?", type:"radio", req:true, opts:["Solo","Partner / couple","Friends (2–4 people)","Family with children","Larger group (5+)"] },
+      { n:"Q4", text:"What did you use to take photos during your visit?", type:"checkbox", req:true, opts:["Smartphone only","Compact / point-and-shoot camera","DSLR or mirrorless camera (my own)","Camera provided by a tour operator","I didn't take photos"] },
+      { n:"Q5", text:"Was there a moment during your trip when you wished you had a better camera? If yes, describe it briefly.", type:"textarea", req:false },
+      { n:"Q6", text:"Why didn't you bring a professional camera on this trip?", type:"checkbox", req:false, opts:["Too heavy or bulky to travel with","Afraid of losing it or having it stolen","I don't own one","I don't know how to use one","I actually did bring one","Other"] },
+      { n:"Q7", text:"If there had been a local shop in Tromsø where you could rent a quality camera for 1–3 days, how likely would you have been to use it?", type:"scale", req:true, low:"Not at all likely", high:"Extremely likely" },
+      { n:"Q8", text:"What would a camera rental service need to include for you to feel comfortable using it?", type:"checkbox", req:true, opts:["Camera pre-configured for Northern Lights photography","A short tutorial or guide included at pickup","Insurance or damage protection included","A reasonable security deposit (not too large)","Option to rent a tripod as well","English-speaking staff","Online booking in advance","Central location (easy to reach from my hotel)"] },
+      { n:"Q9", text:"How much would you be willing to pay to rent a mirrorless camera with lens for one full day?", type:"radio", req:true, opts:["Less than 300 NOK (~25 EUR)","300–500 NOK (~25–45 EUR)","500–800 NOK (~45–70 EUR)","800–1200 NOK (~70–105 EUR)","More than 1200 NOK if the service is excellent","I would not pay for this"] },
+      { n:"Q10", text:"How did you find out about activities and services available in Tromsø?", type:"checkbox", req:true, opts:["Google search","TripAdvisor","Instagram or TikTok","Travel blog or YouTube","Recommendation from hotel / hostel staff","Recommendation from friends or family","Booking platform (GetYourGuide, Viator…)","Other"] },
+      { n:"Q11", text:"Before or during your trip, did you search for camera rental options in Tromsø?", type:"radio", req:true, opts:["Yes — and I found a good option","Yes — but I couldn't find anything suitable","No — I didn't think of it","No — I wasn't interested"] },
+      { n:"Q12", text:"Is there anything else you'd like to share about photography and travel that we haven't asked?", type:"textarea", req:false }
+    ],
+    sectionMap: [0,0,0,1,1,1,2,2,2,3,3,3]
+  },
+  es: {
+    title: "Fotografía y tu viaje a Tromsø",
+    desc: "Esta breve encuesta (5 min) nos ayuda a entender cómo los viajeros viven la fotografía en Tromsø. Tus respuestas son anónimas.",
+    back: "← Volver", single: "Opción única", multiple: "Opción múltiple", scale: "Escala 1–5", open: "Respuesta abierta",
+    submit: "Enviar encuesta", submitting: "Enviando…", error_required: "Por favor responde esta pregunta",
+    gift_survey: "¡Completa la encuesta y recibe fotos de Tromsø de regalo! 🎁",
+    thanks_title: "¡Gracias! 🙏",
+    thanks_msg: "Tus respuestas ayudarán a mejorar los servicios fotográficos para visitantes de Tromsø. Aquí tienes tu regalo — una selección de fotos de Tromsø, libres para usar y guardar.",
+    download_label: "Descarga tus fotos de Tromsø de regalo",
+    download_note: "Se abre en Google Drive · No necesitas cuenta para ver",
+    thanks_again: "Hacer la encuesta de nuevo",
+    sections: ["Sobre tu viaje", "Experiencia fotográfica", "Interés en alquiler de cámara", "Descubrimiento y contexto"],
+    questions: [
+      { n:"P1", text:"¿Cuál fue el motivo principal de tu viaje a Tromsø?", type:"radio", req:true, opts:["Ver la aurora boreal","Sol de medianoche / naturaleza de verano","Actividades de invierno (esquí, trineo con perros, avistamiento de ballenas…)","Escapada urbana / cultura","Trabajo o conferencia","Otro"] },
+      { n:"P2", text:"¿Cuántas noches pasaste (o pasarás) en Tromsø?", type:"radio", req:true, opts:["1 noche","2–3 noches","4–6 noches","1 semana o más"] },
+      { n:"P3", text:"¿Con quién viajaste?", type:"radio", req:true, opts:["Solo/a","En pareja","Con amigos (2–4 personas)","En familia con niños","Grupo grande (5+)"] },
+      { n:"P4", text:"¿Qué usaste para hacer fotos durante tu visita?", type:"checkbox", req:true, opts:["Solo el móvil","Cámara compacta / de apuntar y disparar","Cámara réflex o sin espejo (propia)","Cámara proporcionada por un operador turístico","No hice fotos"] },
+      { n:"P5", text:"¿Hubo algún momento en tu viaje en que desearas tener una cámara mejor? Si es así, descríbelo brevemente.", type:"textarea", req:false },
+      { n:"P6", text:"¿Por qué no trajiste una cámara profesional en este viaje?", type:"checkbox", req:false, opts:["Demasiado pesada o voluminosa para viajar","Miedo a perderla o que me la roben","No tengo ninguna","No sé cómo usarla","Sí traje una","Otro"] },
+      { n:"P7", text:"Si hubiera habido una tienda local en Tromsø donde alquilar una cámara de calidad por 1–3 días, ¿qué probabilidad hay de que la hubieras usado?", type:"scale", req:true, low:"Muy poco probable", high:"Extremadamente probable" },
+      { n:"P8", text:"¿Qué debería incluir un servicio de alquiler de cámaras para que te sintieras cómodo/a usándolo?", type:"checkbox", req:true, opts:["Cámara preconfigurada para fotografía de aurora boreal","Un breve tutorial o guía incluida al recoger la cámara","Seguro o protección contra daños incluido","Depósito de seguridad razonable (no demasiado elevado)","Opción de alquilar también un trípode","Personal que hable español/inglés","Reserva online con antelación","Ubicación céntrica (fácil de llegar desde el hotel)"] },
+      { n:"P9", text:"¿Cuánto estarías dispuesto/a a pagar por alquilar una cámara sin espejo con objetivo por un día completo?", type:"radio", req:true, opts:["Menos de 300 NOK (~25 EUR)","300–500 NOK (~25–45 EUR)","500–800 NOK (~45–70 EUR)","800–1200 NOK (~70–105 EUR)","Más de 1200 NOK si el servicio es excelente","No pagaría por esto"] },
+      { n:"P10", text:"¿Cómo te enteraste de las actividades y servicios disponibles en Tromsø?", type:"checkbox", req:true, opts:["Búsqueda en Google","TripAdvisor","Instagram o TikTok","Blog de viajes o YouTube","Recomendación del personal del hotel / hostal","Recomendación de amigos o familiares","Plataforma de reservas (GetYourGuide, Viator…)","Otro"] },
+      { n:"P11", text:"Antes o durante tu viaje, ¿buscaste opciones de alquiler de cámaras en Tromsø?", type:"radio", req:true, opts:["Sí — y encontré una buena opción","Sí — pero no encontré nada adecuado","No — no se me ocurrió","No — no me interesaba"] },
+      { n:"P12", text:"¿Hay algo más que quieras compartir sobre fotografía y viajes que no hayamos preguntado?", type:"textarea", req:false }
+    ],
+    sectionMap: [0,0,0,1,1,1,2,2,2,3,3,3]
+  },
+  de: {
+    title: "Fotografie & Ihre Reise nach Tromsø",
+    desc: "Diese kurze Umfrage (5 Min.) hilft uns zu verstehen, wie Reisende die Fotografie in Tromsø erleben. Ihre Antworten sind anonym.",
+    back: "← Zurück", single: "Einzelauswahl", multiple: "Mehrfachauswahl", scale: "Skala 1–5", open: "Offene Antwort",
+    submit: "Umfrage absenden", submitting: "Wird gesendet…", error_required: "Bitte beantworten Sie diese Frage",
+    gift_survey: "Füllen Sie die Umfrage aus und erhalten Sie kostenlose Tromsø-Fotos als Geschenk! 🎁",
+    thanks_title: "Vielen Dank! 🙏",
+    thanks_msg: "Ihre Antworten helfen dabei, die Fotografie-Dienste für Tromsø-Besucher zu verbessern. Hier ist Ihr Geschenk — eine Auswahl an Tromsø-Fotos, kostenlos zum Behalten.",
+    download_label: "Kostenlose Tromsø-Fotos herunterladen",
+    download_note: "Öffnet Google Drive · Kein Konto erforderlich",
+    thanks_again: "Umfrage erneut ausfüllen",
+    sections: ["Über Ihre Reise", "Fotografieerfahrung", "Interesse an Kameraverleih", "Entdeckung & Kontext"],
+    questions: [
+      { n:"F1", text:"Was war der Hauptgrund Ihrer Reise nach Tromsø?", type:"radio", req:true, opts:["Nordlichter sehen","Mitternachtssonne / Sommernatur","Winteraktivitäten (Skifahren, Schlittenhundfahren, Walbeobachtung…)","Städtetrip / Kultur","Arbeit oder Konferenz","Sonstiges"] },
+      { n:"F2", text:"Wie viele Nächte haben Sie (oder werden Sie) in Tromsø verbringen?", type:"radio", req:true, opts:["1 Nacht","2–3 Nächte","4–6 Nächte","1 Woche oder mehr"] },
+      { n:"F3", text:"Mit wem haben Sie gereist?", type:"radio", req:true, opts:["Alleine","Partner / Paar","Freunde (2–4 Personen)","Familie mit Kindern","Größere Gruppe (5+)"] },
+      { n:"F4", text:"Was haben Sie während Ihres Besuchs zum Fotografieren verwendet?", type:"checkbox", req:true, opts:["Nur Smartphone","Kompaktkamera","DSLR oder spiegellose Kamera (eigene)","Kamera eines Reiseveranstalters","Ich habe keine Fotos gemacht"] },
+      { n:"F5", text:"Gab es einen Moment auf Ihrer Reise, in dem Sie sich eine bessere Kamera gewünscht hätten? Falls ja, beschreiben Sie ihn kurz.", type:"textarea", req:false },
+      { n:"F6", text:"Warum haben Sie keine professionelle Kamera mitgebracht?", type:"checkbox", req:false, opts:["Zu schwer oder sperrig zum Reisen","Angst, sie zu verlieren oder gestohlen zu bekommen","Ich besitze keine","Ich weiß nicht, wie man sie benutzt","Ich habe tatsächlich eine mitgebracht","Sonstiges"] },
+      { n:"F7", text:"Wenn es in Tromsø ein lokales Geschäft gegeben hätte, in dem Sie eine Qualitätskamera für 1–3 Tage hätten mieten können, wie wahrscheinlich wäre es gewesen, dass Sie es genutzt hätten?", type:"scale", req:true, low:"Überhaupt nicht wahrscheinlich", high:"Sehr wahrscheinlich" },
+      { n:"F8", text:"Was müsste ein Kameraverleihdienst beinhalten, damit Sie sich wohl fühlen, ihn zu nutzen?", type:"checkbox", req:true, opts:["Kamera vorkonfiguriert für Nordlichter-Fotografie","Kurze Einführung oder Anleitung bei der Abholung","Versicherung oder Schadensschutz inklusive","Angemessene Kaution (nicht zu hoch)","Option, auch ein Stativ zu mieten","Deutschsprachiges Personal","Online-Buchung im Voraus","Zentrale Lage (leicht vom Hotel aus erreichbar)"] },
+      { n:"F9", text:"Wie viel wären Sie bereit zu zahlen, um eine spiegellose Kamera mit Objektiv für einen vollen Tag zu mieten?", type:"radio", req:true, opts:["Weniger als 300 NOK (~25 EUR)","300–500 NOK (~25–45 EUR)","500–800 NOK (~45–70 EUR)","800–1200 NOK (~70–105 EUR)","Mehr als 1200 NOK, wenn der Service ausgezeichnet ist","Ich würde dafür nicht zahlen"] },
+      { n:"F10", text:"Wie haben Sie von den Aktivitäten und Dienstleistungen in Tromsø erfahren?", type:"checkbox", req:true, opts:["Google-Suche","TripAdvisor","Instagram oder TikTok","Reiseblog oder YouTube","Empfehlung des Hotel- / Hostelpersonals","Empfehlung von Freunden oder Familie","Buchungsplattform (GetYourGuide, Viator…)","Sonstiges"] },
+      { n:"F11", text:"Haben Sie vor oder während Ihrer Reise nach Kameraverleihmöglichkeiten in Tromsø gesucht?", type:"radio", req:true, opts:["Ja — und ich habe eine gute Option gefunden","Ja — aber ich konnte nichts Passendes finden","Nein — ich habe nicht daran gedacht","Nein — ich war nicht interessiert"] },
+      { n:"F12", text:"Gibt es noch etwas, das Sie über Fotografie und Reisen mitteilen möchten, das wir nicht gefragt haben?", type:"textarea", req:false }
+    ],
+    sectionMap: [0,0,0,1,1,1,2,2,2,3,3,3]
+  },
+  fr: {
+    title: "Photographie & votre voyage à Tromsø",
+    desc: "Ce court sondage (5 min) nous aide à comprendre comment les voyageurs vivent la photographie à Tromsø. Vos réponses sont anonymes.",
+    back: "← Retour", single: "Choix unique", multiple: "Choix multiple", scale: "Échelle 1–5", open: "Réponse libre",
+    submit: "Envoyer le sondage", submitting: "Envoi en cours…", error_required: "Veuillez répondre à cette question",
+    gift_survey: "Complétez le sondage et recevez des photos de Tromsø en cadeau ! 🎁",
+    thanks_title: "Merci ! 🙏",
+    thanks_msg: "Vos réponses contribueront à améliorer les services photographiques pour les visiteurs de Tromsø. Voici votre cadeau — une sélection de photos de Tromsø, libres à garder.",
+    download_label: "Télécharger vos photos de Tromsø offertes",
+    download_note: "Ouvre Google Drive · Aucun compte requis pour voir",
+    thanks_again: "Refaire le sondage",
+    sections: ["Votre voyage", "Expérience photographique", "Intérêt pour la location", "Découverte & contexte"],
+    questions: [
+      { n:"Q1", text:"Quelle était la principale raison de votre voyage à Tromsø ?", type:"radio", req:true, opts:["Voir les aurores boréales","Soleil de minuit / nature estivale","Activités hivernales (ski, traîneau à chiens, observation des baleines…)","City break / culture","Travail ou conférence","Autre"] },
+      { n:"Q2", text:"Combien de nuits avez-vous passé (ou passerez-vous) à Tromsø ?", type:"radio", req:true, opts:["1 nuit","2–3 nuits","4–6 nuits","1 semaine ou plus"] },
+      { n:"Q3", text:"Avec qui avez-vous voyagé ?", type:"radio", req:true, opts:["Seul(e)","En couple","Entre amis (2–4 personnes)","En famille avec enfants","Grand groupe (5+)"] },
+      { n:"Q4", text:"Qu'avez-vous utilisé pour prendre des photos pendant votre visite ?", type:"checkbox", req:true, opts:["Smartphone uniquement","Appareil photo compact","Reflex ou hybride (le mien)","Appareil fourni par un opérateur touristique","Je n'ai pas pris de photos"] },
+      { n:"Q5", text:"Y a-t-il eu un moment durant votre voyage où vous auriez souhaité avoir un meilleur appareil photo ? Si oui, décrivez-le brièvement.", type:"textarea", req:false },
+      { n:"Q6", text:"Pourquoi n'avez-vous pas apporté d'appareil photo professionnel lors de ce voyage ?", type:"checkbox", req:false, opts:["Trop lourd ou encombrant à transporter","Peur de le perdre ou de se le faire voler","Je n'en possède pas","Je ne sais pas m'en servir","J'en ai effectivement apporté un","Autre"] },
+      { n:"Q7", text:"S'il y avait eu une boutique locale à Tromsø où louer un appareil photo de qualité pour 1 à 3 jours, quelle aurait été la probabilité que vous l'utilisiez ?", type:"scale", req:true, low:"Pas du tout probable", high:"Extrêmement probable" },
+      { n:"Q8", text:"Que devrait inclure un service de location d'appareils photo pour que vous vous sentiez à l'aise pour l'utiliser ?", type:"checkbox", req:true, opts:["Appareil pré-configuré pour la photo d'aurores boréales","Un court tutoriel ou guide inclus à la remise","Assurance ou protection contre les dommages incluse","Dépôt de garantie raisonnable (pas trop élevé)","Option de louer également un trépied","Personnel francophone","Réservation en ligne à l'avance","Emplacement central (facile d'accès depuis l'hôtel)"] },
+      { n:"Q9", text:"Combien seriez-vous prêt(e) à payer pour louer un appareil hybride avec objectif pour une journée complète ?", type:"radio", req:true, opts:["Moins de 300 NOK (~25 EUR)","300–500 NOK (~25–45 EUR)","500–800 NOK (~45–70 EUR)","800–1200 NOK (~70–105 EUR)","Plus de 1200 NOK si le service est excellent","Je ne paierais pas pour cela"] },
+      { n:"Q10", text:"Comment avez-vous découvert les activités et services disponibles à Tromsø ?", type:"checkbox", req:true, opts:["Recherche Google","TripAdvisor","Instagram ou TikTok","Blog de voyage ou YouTube","Recommandation du personnel de l'hôtel / auberge","Recommandation d'amis ou de la famille","Plateforme de réservation (GetYourGuide, Viator…)","Autre"] },
+      { n:"Q11", text:"Avant ou pendant votre voyage, avez-vous recherché des options de location d'appareils photo à Tromsø ?", type:"radio", req:true, opts:["Oui — et j'ai trouvé une bonne option","Oui — mais je n'ai rien trouvé de convenable","Non — je n'y ai pas pensé","Non — je n'étais pas intéressé(e)"] },
+      { n:"Q12", text:"Y a-t-il autre chose que vous souhaiteriez partager sur la photographie et les voyages que nous n'avons pas demandé ?", type:"textarea", req:false }
+    ],
+    sectionMap: [0,0,0,1,1,1,2,2,2,3,3,3]
+  },
+  zh: {
+    title: "摄影与您的特罗姆瑟之旅",
+    desc: "这份简短的问卷（约5分钟）帮助我们了解游客在特罗姆瑟的摄影体验。您的回答完全匿名。",
+    back: "← 返回", single: "单选", multiple: "多选", scale: "评分 1–5", open: "开放性回答",
+    submit: "提交问卷", submitting: "提交中…", error_required: "请回答这道题",
+    gift_survey: "完成问卷，即可获赠特罗姆瑟精选照片！🎁",
+    thanks_title: "感谢您！🙏",
+    thanks_msg: "您的回答将有助于改善特罗姆瑟访客的摄影服务。这是您的礼物——一组特罗姆瑟精选照片，可免费保存使用。",
+    download_label: "下载您的免费特罗姆瑟照片",
+    download_note: "在 Google Drive 中打开 · 无需账号即可查看",
+    thanks_again: "重新填写问卷",
+    sections: ["关于您的旅行", "摄影体验", "相机租赁意向", "发现渠道与背景"],
+    questions: [
+      { n:"问1", text:"您此次前往特罗姆瑟的主要原因是什么？", type:"radio", req:true, opts:["观看北极光","午夜太阳 / 夏季自然风光","冬季活动（滑雪、狗拉雪橇、观鲸……）","城市休闲 / 文化体验","工作或会议","其他"] },
+      { n:"问2", text:"您在特罗姆瑟住了（或将住）几晚？", type:"radio", req:true, opts:["1晚","2–3晚","4–6晚","1周或更长"] },
+      { n:"问3", text:"您与谁同行？", type:"radio", req:true, opts:["独自旅行","与伴侣 / 两人同行","与朋友（2–4人）","带孩子的家庭","较大团体（5人以上）"] },
+      { n:"问4", text:"您在参观期间使用什么拍照？", type:"checkbox", req:true, opts:["仅使用智能手机","卡片机 / 便携式相机","单反或无反相机（自带）","旅游运营商提供的相机","我没有拍照"] },
+      { n:"问5", text:"旅途中是否有某个时刻您希望自己有一台更好的相机？如有，请简短描述。", type:"textarea", req:false },
+      { n:"问6", text:"您为什么没有携带专业相机出行？", type:"checkbox", req:false, opts:["太重或太笨重，不便携带","担心丢失或被盗","我没有专业相机","我不会使用专业相机","我实际上带了一台","其他"] },
+      { n:"问7", text:"如果特罗姆瑟有一家本地店铺，可以租借高质量相机1–3天，您使用该服务的可能性有多大？", type:"scale", req:true, low:"完全不可能", high:"非常可能" },
+      { n:"问8", text:"相机租赁服务需要包含哪些内容，您才会感到放心使用？", type:"checkbox", req:true, opts:["预先配置好用于北极光摄影的相机","取机时附带简短教程或使用指南","包含保险或损坏保障","合理的押金（不要太高）","可同时租借三脚架","提供中文服务的工作人员","支持在线提前预订","位置便中（从酒店易于到达）"] },
+      { n:"问9", text:"您愿意为租借一台带镜头的无反相机一整天支付多少费用？", type:"radio", req:true, opts:["低于300挪威克朗（约25欧元）","300–500挪威克朗（约25–45欧元）","500–800挪威克朗（约45–70欧元）","800–1200挪威克朗（约70–105欧元）","如果服务优秀，愿意支付超过1200挪威克朗","我不会为此付费"] },
+      { n:"问10", text:"您是如何了解到特罗姆瑟的活动和服务的？", type:"checkbox", req:true, opts:["Google搜索","TripAdvisor","Instagram或TikTok","旅游博客或YouTube","酒店 / 青旅工作人员的推荐","朋友或家人的推荐","预订平台（GetYourGuide、Viator……）","其他"] },
+      { n:"问11", text:"在旅行前或旅途中，您是否搜索过特罗姆瑟的相机租赁选项？", type:"radio", req:true, opts:["是——我找到了一个好选择","是——但没有找到合适的","没有——我没想到这个","没有——我没有兴趣"] },
+      { n:"问12", text:"关于摄影和旅行，您还有什么想分享的内容，是我们没有问到的吗？", type:"textarea", req:false }
+    ],
+    sectionMap: [0,0,0,1,1,1,2,2,2,3,3,3]
+  }
+};
+
+// ── STATE ───────────────────────────────────────────────────
+let currentLang = null;
+let answers = {};
+
+// ── FUNCTIONS ───────────────────────────────────────────────
+function startSurvey(lang) {
+  currentLang = lang;
+  answers = {};
+  const t = T[lang];
+  document.getElementById('lang-page').style.display = 'none';
+  document.getElementById('survey-page').style.display = 'block';
+  document.getElementById('survey-title').textContent = t.title;
+  document.getElementById('survey-desc').textContent = t.desc;
+  document.getElementById('back-btn').textContent = t.back;
+  document.getElementById('gift-survey-text').textContent = t.gift_survey;
+  renderSurvey(t);
+  window.scrollTo(0, 0);
+}
+
+function goBack() {
+  document.getElementById('survey-page').style.display = 'none';
+  document.getElementById('lang-page').style.display = 'flex';
+  window.scrollTo(0, 0);
+}
+
+function resetSurvey() {
+  document.getElementById('thanks-page').style.display = 'none';
+  document.getElementById('lang-page').style.display = 'flex';
+  window.scrollTo(0, 0);
+}
+
+function renderSurvey(t) {
+  const body = document.getElementById('survey-body');
+  body.innerHTML = '';
+  let currentSection = -1;
+
+  t.questions.forEach((q, i) => {
+    const secIdx = t.sectionMap[i];
+    if (secIdx !== currentSection) {
+      currentSection = secIdx;
+      const sl = document.createElement('div');
+      sl.className = 'section-label';
+      sl.textContent = t.sections[secIdx];
+      body.appendChild(sl);
+    }
+
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'card-' + i;
+
+    const qnum = document.createElement('div');
+    qnum.className = 'q-num';
+    qnum.textContent = q.n + (q.req ? ' *' : '');
+    card.appendChild(qnum);
+
+    const qtext = document.createElement('div');
+    qtext.className = 'q-text';
+    qtext.textContent = q.text;
+    card.appendChild(qtext);
+
+    const badge = document.createElement('span');
+    badge.className = 'q-type-badge';
+    if (q.type === 'radio') badge.textContent = t.single;
+    else if (q.type === 'checkbox') badge.textContent = t.multiple;
+    else if (q.type === 'scale') badge.textContent = t.scale;
+    else badge.textContent = t.open;
+    card.appendChild(badge);
+
+    if (q.type === 'radio' || q.type === 'checkbox') {
+      const list = document.createElement('div');
+      list.className = 'options-list';
+      q.opts.forEach(opt => {
+        const lbl = document.createElement('label');
+        lbl.className = 'opt-label';
+        const inp = document.createElement('input');
+        inp.type = q.type === 'radio' ? 'radio' : 'checkbox';
+        inp.name = 'q' + i;
+        inp.value = opt;
+        inp.addEventListener('change', () => { collectAnswer(i, q.type); updateProgress(t); });
+        lbl.appendChild(inp);
+        lbl.appendChild(document.createTextNode(opt));
+        list.appendChild(lbl);
+      });
+      card.appendChild(list);
+
+    } else if (q.type === 'scale') {
+      const wrap = document.createElement('div');
+      const row = document.createElement('div');
+      row.className = 'scale-wrap';
+      for (let v = 1; v <= 5; v++) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'scale-btn';
+        btn.textContent = v;
+        btn.dataset.val = v;
+        btn.dataset.qi = i;
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('[data-qi="'+i+'"]').forEach(b => b.classList.remove('selected'));
+          this.classList.add('selected');
+          answers[i] = this.dataset.val;
+          updateProgress(t);
+        });
+        row.appendChild(btn);
+      }
+      wrap.appendChild(row);
+      const labels = document.createElement('div');
+      labels.className = 'scale-labels';
+      labels.innerHTML = '<span>' + q.low + '</span><span>' + q.high + '</span>';
+      wrap.appendChild(labels);
+      card.appendChild(wrap);
+
+    } else if (q.type === 'textarea') {
+      const ta = document.createElement('textarea');
+      ta.className = 'survey-textarea';
+      ta.placeholder = '...';
+      ta.addEventListener('input', () => { answers[i] = ta.value; updateProgress(t); });
+      card.appendChild(ta);
+    }
+
+    const errMsg = document.createElement('div');
+    errMsg.className = 'error-msg';
+    errMsg.id = 'err-' + i;
+    errMsg.textContent = t.error_required;
+    card.appendChild(errMsg);
+
+    body.appendChild(card);
+  });
+
+  const submitWrap = document.createElement('div');
+  submitWrap.className = 'submit-wrap';
+  const submitBtn = document.createElement('button');
+  submitBtn.className = 'submit-btn';
+  submitBtn.textContent = t.submit;
+  submitBtn.id = 'submit-btn';
+  submitBtn.addEventListener('click', () => handleSubmit(t));
+  submitWrap.appendChild(submitBtn);
+  body.appendChild(submitWrap);
+
+  updateProgress(t);
+}
+
+function collectAnswer(i, type) {
+  if (type === 'radio') {
+    const sel = document.querySelector('input[name="q'+i+'"]:checked');
+    answers[i] = sel ? sel.value : null;
+  } else {
+    const sels = document.querySelectorAll('input[name="q'+i+'"]:checked');
+    answers[i] = Array.from(sels).map(s => s.value);
+    if (answers[i].length === 0) answers[i] = null;
+  }
+}
+
+function updateProgress(t) {
+  const total = t.questions.length;
+  let answered = 0;
+  t.questions.forEach((q, i) => {
+    const a = answers[i];
+    if (a !== null && a !== undefined && a !== '' && !(Array.isArray(a) && a.length === 0)) answered++;
+  });
+  document.getElementById('progress-bar').style.width = Math.round((answered / total) * 100) + '%';
+}
+
+function handleSubmit(t) {
+  let valid = true;
+  t.questions.forEach((q, i) => {
+    if (!q.req) return;
+    const a = answers[i];
+    const empty = a === null || a === undefined || a === '' || (Array.isArray(a) && a.length === 0);
+    const card = document.getElementById('card-' + i);
+    const err = document.getElementById('err-' + i);
+    if (empty) { valid = false; card.classList.add('has-error'); err.style.display = 'block'; }
+    else { card.classList.remove('has-error'); err.style.display = 'none'; }
+  });
+
+  if (!valid) {
+    const first = document.querySelector('.has-error');
+    if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = t.submitting;
+
+  const payload = { language: currentLang, timestamp: new Date().toISOString() };
+  t.questions.forEach((q, i) => {
+    const val = answers[i];
+    payload[q.n + '_' + q.text.substring(0, 50)] = Array.isArray(val) ? val.join(' | ') : (val || '');
+  });
+
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(() => showThanks(t))
+  .catch(() => showThanks(t));
+}
+
+function showThanks(t) {
+  document.getElementById('survey-page').style.display = 'none';
+  const tp = document.getElementById('thanks-page');
+  tp.style.display = 'flex';
+  document.getElementById('thanks-title').textContent = t.thanks_title;
+  document.getElementById('thanks-msg').textContent = t.thanks_msg;
+  document.getElementById('download-label').textContent = t.download_label;
+  document.getElementById('download-note').textContent = t.download_note;
+  document.getElementById('thanks-again').textContent = t.thanks_again;
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
